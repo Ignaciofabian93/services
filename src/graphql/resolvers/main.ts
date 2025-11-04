@@ -1,44 +1,21 @@
 import { type OrderBy } from "../../types/general";
-import { DepartmentCategoriesService } from "../services/departmentCategories";
-import { DepartmentService } from "../services/departments";
-import { ProductService } from "../services/product";
-import { ProductCategoriesService } from "../services/productCategories";
 import { CatalogResolver } from "./catalog";
-import { DepartmentResolver } from "./department";
-import { ImpactResolver } from "./impact";
-import { ProductResolver } from "./product";
-import { StoreProductResolver } from "./storeProduct";
-
-// type singleArgs = { id: number; take: number; skip: number; orderBy: OrderBy };
+import { ServiceCategoryResolver } from "./serviceCategory";
+import { ServiceResolver } from "./service";
+import { QuotationResolver } from "./quotation";
+import { ServiceReviewResolver } from "./serviceReview";
 
 export const MainResolver = {
   Query: {
     ...CatalogResolver.Query,
-    ...ProductResolver.Query,
-    ...ImpactResolver.Query,
-    ...StoreProductResolver.Query,
-    ...DepartmentResolver.Query,
+    ...ServiceCategoryResolver.Query,
+    ...ServiceResolver.Query,
+    ...QuotationResolver.Query,
+    ...ServiceReviewResolver.Query,
   },
   Mutation: {
-    ...ProductResolver.Mutation,
-    ...StoreProductResolver.Mutation,
+    ...ServiceResolver.Mutation,
+    ...QuotationResolver.Mutation,
+    ...ServiceReviewResolver.Mutation,
   },
-  // Product: {
-  //   __resolveReference: (reference: singleArgs) => ProductService.getProduct(reference),
-  // },
-  // ProductCategory: {
-  //   __resolveReference: (reference: singleArgs) => ProductCategoriesService.getProductCategory(reference),
-  // },
-  // DepartmentCategory: {
-  //   __resolveReference: (reference: singleArgs) => DepartmentCategoriesService.getDepartmentCategory(reference),
-  // },
-  // Department: {
-  //   __resolveReference: (reference: singleArgs) => DepartmentService.getDepartment(reference),
-  // },
-  // ProductLike: {
-  //   user: (parent: { userId: string }) => ({ __typename: "User", id: parent.userId }),
-  // },
-  // ProductComment: {
-  //   user: (parent: { userId: string }) => ({ __typename: "User", id: parent.userId }),
-  // },
 };

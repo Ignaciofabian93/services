@@ -8,60 +8,20 @@ export const typeDefs = gql`
     id: ID! @external
   }
 
-  enum Badge {
-    POPULAR
-    DISCOUNTED
-    WOMAN_OWNED
-    BEST_SELLER
-    TOP_RATED
-    COMMUNITY_FAVORITE
-    LIMITED_TIME_OFFER
-    FLASH_SALE
-    BEST_VALUE
-    HANDMADE
-    SUSTAINABLE
-    SUPPORTS_CAUSE
-    FAMILY_BUSINESS
-    CHARITY_SUPPORT
-    LIMITED_STOCK
-    SEASONAL
-    FREE_SHIPPING
-    FOR_REPAIR
-    REFURBISHED
-    EXCHANGEABLE
-    LAST_PRICE
-    FOR_GIFT
-    OPEN_TO_OFFERS
-    OPEN_BOX
-    CRUELTY_FREE
-    DELIVERED_TO_HOME
-    IN_HOUSE_PICKUP
-    IN_MID_POINT_PICKUP
+  enum ServicePricing {
+    FIXED
+    QUOTATION
+    HOURLY
+    PACKAGE
   }
 
-  enum ProductCondition {
-    NEW
-    OPEN_BOX
-    LIKE_NEW
-    FAIR
-    POOR
-    FOR_PARTS
-    REFURBISHED
-  }
-
-  enum ProductSize {
-    XS
-    S
-    M
-    L
-    XL
-  }
-
-  enum WeightUnit {
-    KG
-    LB
-    OZ
-    G
+  enum QuotationStatus {
+    PENDING
+    ACCEPTED
+    DECLINED
+    COMPLETED
+    CANCELLED
+    EXPIRED
   }
 
   scalar DateTime
@@ -78,391 +38,221 @@ export const typeDefs = gql`
     pageSize: Int!
   }
 
-  type Co2ImpactMessage {
-    id: ID!
-    min: Float
-    max: Float
-    message1: String
-    message2: String
-    message3: String
-  }
-
-  type WaterImpactMessage {
-    id: ID!
-    min: Float
-    max: Float
-    message1: String
-    message2: String
-    message3: String
-  }
-
-  type MaterialImpactEstimate @key(fields: "id") {
-    id: ID!
-    materialType: String!
-    estimatedCo2SavingsKG: Float
-    estimatedWaterSavingsLT: Float
-    productCategoryMaterials: [ProductCategoryMaterial]
-  }
-
-  type Department @key(fields: "id") {
-    id: ID!
-    departmentName: String!
-    departmentImage: String
-    departmentCategory: [DepartmentCategory!]!
-    products: ProductConnection!
-  }
-
-  type DepartmentCategory @key(fields: "id") {
-    id: ID!
-    departmentId: Int!
-    departmentCategoryName: String!
-    department: Department
-    productCategory: [ProductCategory!]!
-    products: ProductConnection!
-  }
-
-  type ProductCategory @key(fields: "id") {
-    id: ID!
-    departmentCategoryId: Int!
-    keywords: [String]
-    productCategoryName: String!
-    size: ProductSize
-    averageWeight: Float
-    weightUnit: WeightUnit
-    products: ProductConnection!
-    departmentCategory: DepartmentCategory
-    materials: [ProductCategoryMaterial]
-  }
-
-  type ProductCategoryMaterial {
-    id: ID!
-    productCategoryId: Int!
-    materialTypeId: ID!
-    quantity: Float!
-    unit: String!
-    isPrimary: Boolean!
-    productCategory: ProductCategory
-    material: MaterialImpactEstimate
-  }
-
-  type Product @key(fields: "id") {
-    id: ID!
-    name: String!
-    description: String!
-    price: Int!
-    hasOffer: Boolean!
-    offerPrice: Int!
-    sellerId: String!
-    badges: [Badge!]!
-    brand: String!
-    color: String
-    createdAt: DateTime!
-    images: [String!]!
-    interests: [String!]!
-    isActive: Boolean!
-    isExchangeable: Boolean!
-    productCategoryId: Int!
-    updatedAt: DateTime!
-    condition: ProductCondition!
-    conditionDescription: String
-    productCategory: ProductCategory
-    seller: Seller
-  }
-
-  type StoreCategory @key(fields: "id") {
+  type ServiceCategory @key(fields: "id") {
     id: ID!
     category: String!
-    subcategories: [StoreSubCategory!]!
-    products: StoreProductConnection!
+    subcategories: [ServiceSubCategory!]!
+    services: ServiceConnection!
   }
 
-  type StoreSubCategory @key(fields: "id") {
+  type ServiceSubCategory @key(fields: "id") {
     id: ID!
-    storeCategoryId: Int!
-    subcategory: String!
-    storeCategory: StoreCategory
-    products: StoreProductConnection
-    productCount: Int
+    subCategory: String!
+    serviceCategoryId: Int!
+    serviceCategory: ServiceCategory
+    services: ServiceConnection!
+    serviceCount: Int
   }
 
-  type StoreProductMaterial @key(fields: "id") {
-    id: ID!
-    storeProductId: Int!
-    materialTypeId: ID!
-    quantity: Float!
-    unit: String!
-    isPrimary: Boolean!
-    sourceMaterial: String
-    isRecycled: Boolean!
-    recycledPercentage: Float
-    supplierVerified: Boolean!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    storeProduct: StoreProduct
-    material: MaterialImpactEstimate
-  }
-
-  type StoreProduct @key(fields: "id") {
+  type Service @key(fields: "id") {
     id: ID!
     name: String!
-    description: String!
-    stock: Int!
-    barcode: String
-    sku: String
-    price: Int!
-    hasOffer: Boolean!
-    offerPrice: Int!
+    description: String
     sellerId: String!
-    images: [String!]!
-    createdAt: DateTime!
-    updatedAt: DateTime!
+    subcategoryId: Int!
+    pricingType: ServicePricing!
+    basePrice: Float
+    priceRange: String
+    duration: Int
     isActive: Boolean!
-    badges: [Badge!]!
-    brand: String!
-    color: String
-    ratingCount: Int!
-    ratings: Float!
-    reviewsNumber: Int!
-    materialComposition: String
-    recycledContent: Float
-    subcategoryId: Int!
-    sustainabilityScore: Int
-    carbonFootprint: Float
-    productVariants: [ProductVariant!]!
-    storeSubCategory: StoreSubCategory
-    seller: Seller
-    materials: [StoreProductMaterial!]!
-  }
-
-  type ProductLike {
-    id: ID!
-    storeProductId: Int!
-    sellerId: String!
-  }
-
-  type ProductComment {
-    id: ID!
-    comment: String!
-    storeProductId: Int!
-    sellerId: String!
-    createdAt: DateTime!
-    rating: Int
-    seller: Seller
-  }
-
-  type ProductVariant {
-    id: ID!
-    storeProductId: Int!
-    name: String!
-    price: Int!
-    stock: Int!
-    color: String
-    size: String
+    images: [String!]!
+    tags: [String!]!
     createdAt: DateTime!
     updatedAt: DateTime!
-    storeProduct: StoreProduct
+    serviceCategory: ServiceSubCategory
+    seller: Seller
+    quotations: [Quotation!]!
+    reviews: [ServiceReview!]!
+    averageRating: Float
+    reviewCount: Int!
   }
 
-  input AddProductInput {
-    sku: String
-    barcode: String
-    color: String
-    brand: String!
-    name: String!
-    description: String!
-    price: Int!
-    images: [String!]!
-    hasOffer: Boolean
-    offerPrice: Int
-    stock: Int!
-    isExchangeable: Boolean
-    interests: [String!]
-    isActive: Boolean
-    badges: [Badge!]
-    productCategoryId: Int!
-    sellerId: String!
-    condition: ProductCondition
-    conditionDescription: String
-    sustainabilityScore: Int
-    materialComposition: String
-    recycledContent: Float
-  }
-
-  input UpdateProductInput {
+  type ServiceReview @key(fields: "id") {
     id: ID!
-    sku: String
-    barcode: String
-    color: String
-    brand: String
-    name: String
-    description: String
-    price: Int
-    images: [String!]
-    hasOffer: Boolean
-    offerPrice: Int
-    stock: Int
-    isExchangeable: Boolean
-    interests: [String!]
-    isActive: Boolean
-    badges: [Badge!]
-    productCategoryId: Int
-    condition: ProductCondition
-    conditionDescription: String
-    sustainabilityScore: Int
-    materialComposition: String
-    recycledContent: Float
+    serviceId: Int!
+    reviewerId: String!
+    rating: Int!
+    comment: String
+    createdAt: DateTime!
+    service: Service
+    reviewer: Seller
   }
 
-  input AddStoreProductInput {
-    sku: String
-    barcode: String
-    color: String
-    brand: String
-    name: String!
+  type Quotation @key(fields: "id") {
+    id: ID!
+    serviceId: Int!
+    clientId: String!
+    providerId: String!
+    title: String!
     description: String!
-    price: Int!
-    images: [String!]!
-    hasOffer: Boolean
-    offerPrice: Int
-    stock: Int!
-    isActive: Boolean
-    badges: [Badge!]
+    estimatedPrice: Float
+    finalPrice: Float
+    estimatedDuration: Int
+    status: QuotationStatus!
+    clientNotes: String
+    providerNotes: String
+    attachments: [String!]!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    expiresAt: DateTime
+    acceptedAt: DateTime
+    completedAt: DateTime
+    service: Service
+    client: Seller
+    provider: Seller
+  }
+
+  input AddServiceInput {
+    name: String!
+    description: String
     subcategoryId: Int!
+    pricingType: ServicePricing!
+    basePrice: Float
+    priceRange: String
+    duration: Int
+    images: [String!]!
+    tags: [String!]
     sellerId: String!
-    sustainabilityScore: Int
-    materialComposition: String
-    recycledContent: Float
-    carbonFootprint: Float
+    isActive: Boolean
   }
 
-  input UpdateStoreProductInput {
+  input UpdateServiceInput {
     id: ID!
-    sku: String
-    barcode: String
-    color: String
-    brand: String
     name: String
     description: String
-    price: Int
-    images: [String!]
-    hasOffer: Boolean
-    offerPrice: Int
-    stock: Int
-    isActive: Boolean
-    badges: [Badge!]
     subcategoryId: Int
-    sustainabilityScore: Int
-    materialComposition: String
-    recycledContent: Float
-    carbonFootprint: Float
+    pricingType: ServicePricing
+    basePrice: Float
+    priceRange: String
+    duration: Int
+    images: [String!]
+    tags: [String!]
+    isActive: Boolean
   }
 
-  type DepartmentConnection {
-    nodes: [Department!]!
+  input AddQuotationInput {
+    serviceId: Int!
+    clientId: String!
+    providerId: String!
+    title: String!
+    description: String!
+    estimatedPrice: Float
+    estimatedDuration: Int
+    clientNotes: String
+    attachments: [String!]
+    expiresAt: DateTime
+  }
+
+  input UpdateQuotationInput {
+    id: ID!
+    estimatedPrice: Float
+    finalPrice: Float
+    estimatedDuration: Int
+    status: QuotationStatus
+    clientNotes: String
+    providerNotes: String
+    attachments: [String!]
+    expiresAt: DateTime
+  }
+
+  input AddServiceReviewInput {
+    serviceId: Int!
+    reviewerId: String!
+    rating: Int!
+    comment: String
+  }
+
+  type ServiceCategoryConnection {
+    nodes: [ServiceCategory!]!
     pageInfo: PageInfo!
   }
 
-  type DepartmentCategoryConnection {
-    nodes: [DepartmentCategory!]!
+  type ServiceSubCategoryConnection {
+    nodes: [ServiceSubCategory!]!
     pageInfo: PageInfo!
   }
 
-  type ProductCategoryConnection {
-    nodes: [ProductCategory!]!
+  type ServiceConnection {
+    nodes: [Service!]!
     pageInfo: PageInfo!
   }
 
-  type ProductConnection {
-    nodes: [Product!]!
+  type QuotationConnection {
+    nodes: [Quotation!]!
     pageInfo: PageInfo!
   }
 
-  type StoreCategoryConnection {
-    nodes: [StoreCategory!]!
-    pageInfo: PageInfo!
-  }
-
-  type StoreSubCategoryConnection {
-    nodes: [StoreSubCategory!]!
-    pageInfo: PageInfo!
-  }
-
-  type StoreProductConnection {
-    nodes: [StoreProduct!]!
+  type ServiceReviewConnection {
+    nodes: [ServiceReview!]!
     pageInfo: PageInfo!
   }
 
   extend type Query {
-    # Catalog Queries
-    marketCatalog: [Department]
-    storeCatalog: [StoreCategory]
+    # Service Catalog
+    serviceCatalog: [ServiceCategory]
 
-    # Marketplace Queries
-    getDepartment(id: ID!): Department
-    getDepartmentCategories(departmentId: ID!, page: Int = 1, pageSize: Int = 10): DepartmentCategoryConnection
-    getProductCategory(id: ID!): ProductCategory
-    getProductCategories(departmentCategoryId: ID!, page: Int = 1, pageSize: Int = 10): ProductCategoryConnection
+    # Service Category Queries
+    getServiceCategory(id: ID!): ServiceCategory
+    getServiceSubCategories(serviceCategoryId: ID!, page: Int = 1, pageSize: Int = 10): ServiceSubCategoryConnection
+    getServiceSubCategory(id: ID!): ServiceSubCategory
 
-    # Product Queries
-    getProduct(id: ID!): Product
-    getProducts(page: Int = 1, pageSize: Int = 10, isActive: Boolean): ProductConnection
-    getProductsBySeller(sellerId: ID!, page: Int = 1, pageSize: Int = 10, isActive: Boolean): ProductConnection
-    getProductsByCategory(
-      productCategoryId: ID!
-      page: Int = 1
-      pageSize: Int = 10
-      isActive: Boolean
-    ): ProductConnection
-    getExchangeableProducts(page: Int = 1, pageSize: Int = 10): ProductConnection
-
-    # Store Queries
-    getStoreCategory(id: ID!): StoreCategory
-    getStoreSubCategories(storeCategoryId: ID!, page: Int = 1, pageSize: Int = 10): StoreSubCategoryConnection
-    getStoreSubCategory(id: ID!): StoreSubCategory
-
-    # Store Product Queries
-    getStoreProduct(id: ID!): StoreProduct
-    getStoreProducts(page: Int = 1, pageSize: Int = 10, isActive: Boolean): StoreProductConnection
-    getStoreProductsBySeller(
-      sellerId: ID!
-      page: Int = 1
-      pageSize: Int = 10
-      isActive: Boolean
-    ): StoreProductConnection
-    getStoreProductsBySubCategory(
+    # Service Queries
+    getService(id: ID!): Service
+    getServices(page: Int = 1, pageSize: Int = 10, isActive: Boolean): ServiceConnection
+    getServicesBySeller(sellerId: ID!, page: Int = 1, pageSize: Int = 10, isActive: Boolean): ServiceConnection
+    getServicesBySubCategory(
       subcategoryId: ID!
       page: Int = 1
       pageSize: Int = 10
       isActive: Boolean
-    ): StoreProductConnection
+    ): ServiceConnection
+    getServicesByPricingType(
+      pricingType: ServicePricing!
+      page: Int = 1
+      pageSize: Int = 10
+      isActive: Boolean
+    ): ServiceConnection
 
-    # Comments and Likes
-    getProductComments(storeProductId: ID!, page: Int = 1, pageSize: Int = 10): [ProductComment!]!
-    getProductLikes(storeProductId: ID!): [ProductLike!]!
+    # Quotation Queries
+    getQuotation(id: ID!): Quotation
+    getQuotationsByClient(clientId: ID!, page: Int = 1, pageSize: Int = 10): QuotationConnection
+    getQuotationsByProvider(providerId: ID!, page: Int = 1, pageSize: Int = 10): QuotationConnection
+    getQuotationsByService(serviceId: ID!, page: Int = 1, pageSize: Int = 10): QuotationConnection
+    getQuotationsByStatus(status: QuotationStatus!, page: Int = 1, pageSize: Int = 10): QuotationConnection
 
-    # Impact Queries
-    getMaterialImpacts: [MaterialImpactEstimate!]!
-    getCo2ImpactMessages: [Co2ImpactMessage!]!
-    getWaterImpactMessages: [WaterImpactMessage!]!
+    # Review Queries
+    getServiceReviews(serviceId: ID!, page: Int = 1, pageSize: Int = 10): ServiceReviewConnection
+    getServiceReviewsByReviewer(reviewerId: ID!, page: Int = 1, pageSize: Int = 10): ServiceReviewConnection
   }
 
   extend type Mutation {
-    # Marketplace Mutations
-    addProduct(input: AddProductInput!): Product
-    updateProduct(input: UpdateProductInput!): Product
-    deleteProduct(id: ID!): Product
-    toggleProductActive(id: ID!): Product
+    # Service Mutations
+    addService(input: AddServiceInput!): Service
+    updateService(input: UpdateServiceInput!): Service
+    deleteService(id: ID!): Service
+    toggleServiceActive(id: ID!): Service
 
-    # Store Mutations
-    addStoreProduct(input: AddStoreProductInput!): StoreProduct
-    updateStoreProduct(input: UpdateStoreProductInput!): StoreProduct
-    deleteStoreProduct(id: ID!): StoreProduct
-    toggleStoreProductActive(id: ID!): StoreProduct
+    # Quotation Mutations
+    addQuotation(input: AddQuotationInput!): Quotation
+    updateQuotation(input: UpdateQuotationInput!): Quotation
+    acceptQuotation(id: ID!): Quotation
+    declineQuotation(id: ID!, reason: String): Quotation
+    completeQuotation(id: ID!): Quotation
+    cancelQuotation(id: ID!, reason: String): Quotation
+    deleteQuotation(id: ID!): Boolean
 
-    # Product Interactions
-    likeProduct(storeProductId: ID!, sellerId: ID!): ProductLike
-    unlikeProduct(storeProductId: ID!, sellerId: ID!): Boolean
-    addProductComment(storeProductId: ID!, sellerId: ID!, comment: String!, rating: Int): ProductComment
-    deleteProductComment(id: ID!): Boolean
+    # Service Review Mutations
+    addServiceReview(input: AddServiceReviewInput!): ServiceReview
+    deleteServiceReview(id: ID!): Boolean
   }
 `;

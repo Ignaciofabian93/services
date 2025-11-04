@@ -1,46 +1,10 @@
 import prisma from "../../client/prisma";
 import { ErrorService } from "../../errors/errors";
-import { type Department } from "../../types/product";
 
 export const CatalogService = {
-  getMarketCatalog: async () => {
+  getServiceCatalog: async () => {
     try {
-      const departments: Department[] = await prisma.department.findMany({
-        select: {
-          id: true,
-          departmentName: true,
-          departmentCategory: {
-            select: {
-              id: true,
-              departmentCategoryName: true,
-              productCategory: {
-                select: {
-                  id: true,
-                  productCategoryName: true,
-                },
-              },
-            },
-          },
-        },
-        orderBy: {
-          departmentName: "asc",
-        },
-      });
-
-      if (!departments.length) {
-        return new ErrorService.NotFoundError("No se encontraron departamentos");
-      }
-
-      return departments;
-    } catch (error) {
-      console.error("Error al obtener el catálogo del mercado:", error);
-      return new ErrorService.InternalServerError("Error al obtener el catálogo del mercado");
-    }
-  },
-
-  getStoreCatalog: async () => {
-    try {
-      const storeCatalog = await prisma.storeCategory.findMany({
+      const serviceCategories = await prisma.serviceCategory.findMany({
         select: {
           id: true,
           category: true,
@@ -56,14 +20,14 @@ export const CatalogService = {
         },
       });
 
-      if (!storeCatalog.length) {
-        return new ErrorService.NotFoundError("No se encontraron categorías de tienda");
+      if (!serviceCategories.length) {
+        return new ErrorService.NotFoundError("No se encontraron categorías de servicios");
       }
 
-      return storeCatalog;
+      return serviceCategories;
     } catch (error) {
-      console.error("Error al obtener el catálogo de tiendas:", error);
-      return new ErrorService.InternalServerError("Error al obtener el catálogo de tiendas");
+      console.error("Error al obtener el catálogo de servicios:", error);
+      return new ErrorService.InternalServerError("Error al obtener el catálogo de servicios");
     }
   },
 };

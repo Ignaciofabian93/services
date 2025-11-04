@@ -1,12 +1,12 @@
 services:
-  product-service:
+  services-service:
     build:
       context: .
       dockerfile: Dockerfile
     restart: always
-    container_name: product-service
+    container_name: services-service
     ports:
-      - "9002:9002"
+      - "9003:9003"
     networks:
       - ekoru-network
 

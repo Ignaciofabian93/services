@@ -7,16 +7,16 @@ export const resolvers = {
   Mutation: {
     ...MainResolver.Mutation,
   },
-  // Product: {
-  //   __resolveReference: MainResolver.Product.__resolveReference,
+  // Service: {
+  //   __resolveReference: MainResolver.Service.__resolveReference,
   // },
-  // ProductCategory: {
-  //   __resolveReference: MainResolver.ProductCategory.__resolveReference,
+  // ServiceCategory: {
+  //   __resolveReference: MainResolver.ServiceCategory.__resolveReference,
   // },
-  // DepartmentCategory: {
-  //   __resolveReference: MainResolver.DepartmentCategory.__resolveReference,
+  // ServiceSubCategory: {
+  //   __resolveReference: MainResolver.ServiceSubCategory.__resolveReference,
   // },
-  // Department: {
-  //   __resolveReference: MainResolver.Department.__resolveReference,
+  // Quotation: {
+  //   __resolveReference: MainResolver.Quotation.__resolveReference,
   // },
 };

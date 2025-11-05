@@ -1,7 +1,7 @@
 import prisma from "../../client/prisma";
 import { ErrorService } from "../../errors/errors";
 import { QuotationStatus } from "../../types/enums";
-import { calculatePrismaParams } from "../../utils/pagination";
+import { calculatePrismaParams, createPaginatedResponse } from "../../utils/pagination";
 
 interface AddQuotationInput {
   serviceId: number;
@@ -82,65 +82,14 @@ export const QuotationService = {
     try {
       const { skip, take } = calculatePrismaParams(page, pageSize);
 
-      const [quotations, totalCount] = await Promise.all([
-        prisma.quotation.findMany({
-          where: { clientId },
-          select: {
-            id: true,
-            serviceId: true,
-            clientId: true,
-            providerId: true,
-            title: true,
-            description: true,
-            estimatedPrice: true,
-            finalPrice: true,
-            estimatedDuration: true,
-            status: true,
-            clientNotes: true,
-            providerNotes: true,
-            attachments: true,
-            createdAt: true,
-            updatedAt: true,
-            expiresAt: true,
-            acceptedAt: true,
-            completedAt: true,
-            service: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                pricingType: true,
-              },
-            },
-          },
-          skip,
-          take,
-          orderBy: {
-            createdAt: "desc",
-          },
-        }),
-        prisma.quotation.count({ where: { clientId } }),
-      ]);
+      const count = await prisma.quotation.count({ where: { clientId } });
+      const quotations = await prisma.quotation.findMany({
+        where: { clientId },
+        skip,
+        take,
+      });
 
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      return {
-        nodes: quotations.map((quotation) => ({
-          ...quotation,
-          client: { __typename: "Seller", id: quotation.clientId },
-          provider: { __typename: "Seller", id: quotation.providerId },
-        })),
-        pageInfo: {
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1,
-          startCursor: quotations.length > 0 ? quotations[0].id.toString() : null,
-          endCursor: quotations.length > 0 ? quotations[quotations.length - 1].id.toString() : null,
-          totalCount,
-          totalPages,
-          currentPage: page,
-          pageSize,
-        },
-      };
+      return createPaginatedResponse(quotations, count, page, pageSize);
     } catch (error) {
       console.error("Error al obtener las cotizaciones del cliente:", error);
       return new ErrorService.InternalServerError("Error al obtener las cotizaciones del cliente");
@@ -158,66 +107,13 @@ export const QuotationService = {
   }) => {
     try {
       const { skip, take } = calculatePrismaParams(page, pageSize);
-
-      const [quotations, totalCount] = await Promise.all([
-        prisma.quotation.findMany({
-          where: { providerId },
-          select: {
-            id: true,
-            serviceId: true,
-            clientId: true,
-            providerId: true,
-            title: true,
-            description: true,
-            estimatedPrice: true,
-            finalPrice: true,
-            estimatedDuration: true,
-            status: true,
-            clientNotes: true,
-            providerNotes: true,
-            attachments: true,
-            createdAt: true,
-            updatedAt: true,
-            expiresAt: true,
-            acceptedAt: true,
-            completedAt: true,
-            service: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                pricingType: true,
-              },
-            },
-          },
-          skip,
-          take,
-          orderBy: {
-            createdAt: "desc",
-          },
-        }),
-        prisma.quotation.count({ where: { providerId } }),
-      ]);
-
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      return {
-        nodes: quotations.map((quotation) => ({
-          ...quotation,
-          client: { __typename: "Seller", id: quotation.clientId },
-          provider: { __typename: "Seller", id: quotation.providerId },
-        })),
-        pageInfo: {
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1,
-          startCursor: quotations.length > 0 ? quotations[0].id.toString() : null,
-          endCursor: quotations.length > 0 ? quotations[quotations.length - 1].id.toString() : null,
-          totalCount,
-          totalPages,
-          currentPage: page,
-          pageSize,
-        },
-      };
+      const count = await prisma.quotation.count({ where: { providerId } });
+      const quotations = await prisma.quotation.findMany({
+        where: { providerId },
+        skip,
+        take,
+      });
+      return createPaginatedResponse(quotations, count, page, pageSize);
     } catch (error) {
       console.error("Error al obtener las cotizaciones del proveedor:", error);
       return new ErrorService.InternalServerError("Error al obtener las cotizaciones del proveedor");
@@ -235,66 +131,13 @@ export const QuotationService = {
   }) => {
     try {
       const { skip, take } = calculatePrismaParams(page, pageSize);
-
-      const [quotations, totalCount] = await Promise.all([
-        prisma.quotation.findMany({
-          where: { serviceId },
-          select: {
-            id: true,
-            serviceId: true,
-            clientId: true,
-            providerId: true,
-            title: true,
-            description: true,
-            estimatedPrice: true,
-            finalPrice: true,
-            estimatedDuration: true,
-            status: true,
-            clientNotes: true,
-            providerNotes: true,
-            attachments: true,
-            createdAt: true,
-            updatedAt: true,
-            expiresAt: true,
-            acceptedAt: true,
-            completedAt: true,
-            service: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                pricingType: true,
-              },
-            },
-          },
-          skip,
-          take,
-          orderBy: {
-            createdAt: "desc",
-          },
-        }),
-        prisma.quotation.count({ where: { serviceId } }),
-      ]);
-
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      return {
-        nodes: quotations.map((quotation) => ({
-          ...quotation,
-          client: { __typename: "Seller", id: quotation.clientId },
-          provider: { __typename: "Seller", id: quotation.providerId },
-        })),
-        pageInfo: {
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1,
-          startCursor: quotations.length > 0 ? quotations[0].id.toString() : null,
-          endCursor: quotations.length > 0 ? quotations[quotations.length - 1].id.toString() : null,
-          totalCount,
-          totalPages,
-          currentPage: page,
-          pageSize,
-        },
-      };
+      const count = await prisma.quotation.count({ where: { serviceId } });
+      const quotations = await prisma.quotation.findMany({
+        where: { serviceId },
+        skip,
+        take,
+      });
+      return createPaginatedResponse(quotations, count, page, pageSize);
     } catch (error) {
       console.error("Error al obtener las cotizaciones del servicio:", error);
       return new ErrorService.InternalServerError("Error al obtener las cotizaciones del servicio");
@@ -312,66 +155,13 @@ export const QuotationService = {
   }) => {
     try {
       const { skip, take } = calculatePrismaParams(page, pageSize);
-
-      const [quotations, totalCount] = await Promise.all([
-        prisma.quotation.findMany({
-          where: { status },
-          select: {
-            id: true,
-            serviceId: true,
-            clientId: true,
-            providerId: true,
-            title: true,
-            description: true,
-            estimatedPrice: true,
-            finalPrice: true,
-            estimatedDuration: true,
-            status: true,
-            clientNotes: true,
-            providerNotes: true,
-            attachments: true,
-            createdAt: true,
-            updatedAt: true,
-            expiresAt: true,
-            acceptedAt: true,
-            completedAt: true,
-            service: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                pricingType: true,
-              },
-            },
-          },
-          skip,
-          take,
-          orderBy: {
-            createdAt: "desc",
-          },
-        }),
-        prisma.quotation.count({ where: { status } }),
-      ]);
-
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      return {
-        nodes: quotations.map((quotation) => ({
-          ...quotation,
-          client: { __typename: "Seller", id: quotation.clientId },
-          provider: { __typename: "Seller", id: quotation.providerId },
-        })),
-        pageInfo: {
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1,
-          startCursor: quotations.length > 0 ? quotations[0].id.toString() : null,
-          endCursor: quotations.length > 0 ? quotations[quotations.length - 1].id.toString() : null,
-          totalCount,
-          totalPages,
-          currentPage: page,
-          pageSize,
-        },
-      };
+      const count = await prisma.quotation.count({ where: { status } });
+      const quotations = await prisma.quotation.findMany({
+        where: { status },
+        skip,
+        take,
+      });
+      return createPaginatedResponse(quotations, count, page, pageSize);
     } catch (error) {
       console.error("Error al obtener las cotizaciones por estado:", error);
       return new ErrorService.InternalServerError("Error al obtener las cotizaciones por estado");

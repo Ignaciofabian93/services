@@ -1,6 +1,6 @@
 import prisma from "../../client/prisma";
 import { ErrorService } from "../../errors/errors";
-import { calculatePrismaParams } from "../../utils/pagination";
+import { calculatePrismaParams, createPaginatedResponse } from "../../utils/pagination";
 
 interface AddServiceReviewInput {
   serviceId: number;
@@ -14,51 +14,13 @@ export const ServiceReviewService = {
     try {
       const { skip, take } = calculatePrismaParams(page, pageSize);
 
-      const [reviews, totalCount] = await Promise.all([
-        prisma.serviceReview.findMany({
-          where: { serviceId },
-          select: {
-            id: true,
-            serviceId: true,
-            reviewerId: true,
-            rating: true,
-            comment: true,
-            createdAt: true,
-            service: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-              },
-            },
-          },
-          skip,
-          take,
-          orderBy: {
-            createdAt: "desc",
-          },
-        }),
-        prisma.serviceReview.count({ where: { serviceId } }),
-      ]);
-
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      return {
-        nodes: reviews.map((review) => ({
-          ...review,
-          reviewer: { __typename: "Seller", id: review.reviewerId },
-        })),
-        pageInfo: {
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1,
-          startCursor: reviews.length > 0 ? reviews[0].id.toString() : null,
-          endCursor: reviews.length > 0 ? reviews[reviews.length - 1].id.toString() : null,
-          totalCount,
-          totalPages,
-          currentPage: page,
-          pageSize,
-        },
-      };
+      const count = await prisma.serviceReview.count({ where: { serviceId } });
+      const reviews = await prisma.serviceReview.findMany({
+        where: { serviceId },
+        skip,
+        take,
+      });
+      return createPaginatedResponse(reviews, count, page, pageSize);
     } catch (error) {
       console.error("Error al obtener las reseñas del servicio:", error);
       return new ErrorService.InternalServerError("Error al obtener las reseñas del servicio");
@@ -77,51 +39,13 @@ export const ServiceReviewService = {
     try {
       const { skip, take } = calculatePrismaParams(page, pageSize);
 
-      const [reviews, totalCount] = await Promise.all([
-        prisma.serviceReview.findMany({
-          where: { reviewerId },
-          select: {
-            id: true,
-            serviceId: true,
-            reviewerId: true,
-            rating: true,
-            comment: true,
-            createdAt: true,
-            service: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-              },
-            },
-          },
-          skip,
-          take,
-          orderBy: {
-            createdAt: "desc",
-          },
-        }),
-        prisma.serviceReview.count({ where: { reviewerId } }),
-      ]);
-
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      return {
-        nodes: reviews.map((review) => ({
-          ...review,
-          reviewer: { __typename: "Seller", id: review.reviewerId },
-        })),
-        pageInfo: {
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1,
-          startCursor: reviews.length > 0 ? reviews[0].id.toString() : null,
-          endCursor: reviews.length > 0 ? reviews[reviews.length - 1].id.toString() : null,
-          totalCount,
-          totalPages,
-          currentPage: page,
-          pageSize,
-        },
-      };
+      const count = await prisma.serviceReview.count({ where: { reviewerId } });
+      const reviews = await prisma.serviceReview.findMany({
+        where: { reviewerId },
+        skip,
+        take,
+      });
+      return createPaginatedResponse(reviews, count, page, pageSize);
     } catch (error) {
       console.error("Error al obtener las reseñas del revisor:", error);
       return new ErrorService.InternalServerError("Error al obtener las reseñas del revisor");

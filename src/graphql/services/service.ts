@@ -1,7 +1,7 @@
 import prisma from "../../client/prisma";
 import { ErrorService } from "../../errors/errors";
 import { ServicePricing } from "../../types/enums";
-import { calculatePrismaParams } from "../../utils/pagination";
+import { calculatePrismaParams, createPaginatedResponse } from "../../utils/pagination";
 
 interface AddServiceInput {
   name: string;
@@ -112,69 +112,14 @@ export const ServiceService = {
       const { skip, take } = calculatePrismaParams(page, pageSize);
 
       const where = isActive !== undefined ? { isActive } : {};
+      const count = await prisma.service.count({ where });
+      const services = await prisma.service.findMany({
+        where,
+        take,
+        skip,
+      });
 
-      const [services, totalCount] = await Promise.all([
-        prisma.service.findMany({
-          where,
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            sellerId: true,
-            subcategoryId: true,
-            pricingType: true,
-            basePrice: true,
-            priceRange: true,
-            duration: true,
-            isActive: true,
-            images: true,
-            tags: true,
-            createdAt: true,
-            updatedAt: true,
-            serviceCategory: {
-              select: {
-                id: true,
-                subCategory: true,
-                serviceCategoryId: true,
-              },
-            },
-            _count: {
-              select: {
-                quotation: true,
-                serviceReview: true,
-              },
-            },
-          },
-          skip,
-          take,
-          orderBy: {
-            createdAt: "desc",
-          },
-        }),
-        prisma.service.count({ where }),
-      ]);
-
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      return {
-        nodes: services.map((service) => ({
-          ...service,
-          quotations: [],
-          reviews: [],
-          averageRating: 0,
-          reviewCount: service._count.serviceReview,
-        })),
-        pageInfo: {
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1,
-          startCursor: services.length > 0 ? services[0].id.toString() : null,
-          endCursor: services.length > 0 ? services[services.length - 1].id.toString() : null,
-          totalCount,
-          totalPages,
-          currentPage: page,
-          pageSize,
-        },
-      };
+      return createPaginatedResponse(services, count, page, pageSize);
     } catch (error) {
       console.error("Error al obtener los servicios:", error);
       return new ErrorService.InternalServerError("Error al obtener los servicios");
@@ -200,68 +145,13 @@ export const ServiceService = {
         ...(isActive !== undefined && { isActive }),
       };
 
-      const [services, totalCount] = await Promise.all([
-        prisma.service.findMany({
-          where,
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            sellerId: true,
-            subcategoryId: true,
-            pricingType: true,
-            basePrice: true,
-            priceRange: true,
-            duration: true,
-            isActive: true,
-            images: true,
-            tags: true,
-            createdAt: true,
-            updatedAt: true,
-            serviceCategory: {
-              select: {
-                id: true,
-                subCategory: true,
-                serviceCategoryId: true,
-              },
-            },
-            _count: {
-              select: {
-                quotation: true,
-                serviceReview: true,
-              },
-            },
-          },
-          skip,
-          take,
-          orderBy: {
-            createdAt: "desc",
-          },
-        }),
-        prisma.service.count({ where }),
-      ]);
-
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      return {
-        nodes: services.map((service) => ({
-          ...service,
-          quotations: [],
-          reviews: [],
-          averageRating: 0,
-          reviewCount: service._count.serviceReview,
-        })),
-        pageInfo: {
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1,
-          startCursor: services.length > 0 ? services[0].id.toString() : null,
-          endCursor: services.length > 0 ? services[services.length - 1].id.toString() : null,
-          totalCount,
-          totalPages,
-          currentPage: page,
-          pageSize,
-        },
-      };
+      const count = await prisma.service.count({ where });
+      const services = await prisma.service.findMany({
+        where,
+        skip,
+        take,
+      });
+      return createPaginatedResponse(services, count, page, pageSize);
     } catch (error) {
       console.error("Error al obtener los servicios del vendedor:", error);
       return new ErrorService.InternalServerError("Error al obtener los servicios del vendedor");
@@ -286,69 +176,13 @@ export const ServiceService = {
         subcategoryId,
         ...(isActive !== undefined && { isActive }),
       };
-
-      const [services, totalCount] = await Promise.all([
-        prisma.service.findMany({
-          where,
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            sellerId: true,
-            subcategoryId: true,
-            pricingType: true,
-            basePrice: true,
-            priceRange: true,
-            duration: true,
-            isActive: true,
-            images: true,
-            tags: true,
-            createdAt: true,
-            updatedAt: true,
-            serviceCategory: {
-              select: {
-                id: true,
-                subCategory: true,
-                serviceCategoryId: true,
-              },
-            },
-            _count: {
-              select: {
-                quotation: true,
-                serviceReview: true,
-              },
-            },
-          },
-          skip,
-          take,
-          orderBy: {
-            createdAt: "desc",
-          },
-        }),
-        prisma.service.count({ where }),
-      ]);
-
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      return {
-        nodes: services.map((service) => ({
-          ...service,
-          quotations: [],
-          reviews: [],
-          averageRating: 0,
-          reviewCount: service._count.serviceReview,
-        })),
-        pageInfo: {
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1,
-          startCursor: services.length > 0 ? services[0].id.toString() : null,
-          endCursor: services.length > 0 ? services[services.length - 1].id.toString() : null,
-          totalCount,
-          totalPages,
-          currentPage: page,
-          pageSize,
-        },
-      };
+      const count = await prisma.service.count({ where });
+      const services = await prisma.service.findMany({
+        where,
+        skip,
+        take,
+      });
+      return createPaginatedResponse(services, count, page, pageSize);
     } catch (error) {
       console.error("Error al obtener los servicios por subcategoría:", error);
       return new ErrorService.InternalServerError("Error al obtener los servicios por subcategoría");
@@ -373,69 +207,13 @@ export const ServiceService = {
         pricingType,
         ...(isActive !== undefined && { isActive }),
       };
-
-      const [services, totalCount] = await Promise.all([
-        prisma.service.findMany({
-          where,
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            sellerId: true,
-            subcategoryId: true,
-            pricingType: true,
-            basePrice: true,
-            priceRange: true,
-            duration: true,
-            isActive: true,
-            images: true,
-            tags: true,
-            createdAt: true,
-            updatedAt: true,
-            serviceCategory: {
-              select: {
-                id: true,
-                subCategory: true,
-                serviceCategoryId: true,
-              },
-            },
-            _count: {
-              select: {
-                quotation: true,
-                serviceReview: true,
-              },
-            },
-          },
-          skip,
-          take,
-          orderBy: {
-            createdAt: "desc",
-          },
-        }),
-        prisma.service.count({ where }),
-      ]);
-
-      const totalPages = Math.ceil(totalCount / pageSize);
-
-      return {
-        nodes: services.map((service) => ({
-          ...service,
-          quotations: [],
-          reviews: [],
-          averageRating: 0,
-          reviewCount: service._count.serviceReview,
-        })),
-        pageInfo: {
-          hasNextPage: page < totalPages,
-          hasPreviousPage: page > 1,
-          startCursor: services.length > 0 ? services[0].id.toString() : null,
-          endCursor: services.length > 0 ? services[services.length - 1].id.toString() : null,
-          totalCount,
-          totalPages,
-          currentPage: page,
-          pageSize,
-        },
-      };
+      const count = await prisma.service.count({ where });
+      const services = await prisma.service.findMany({
+        where,
+        skip,
+        take,
+      });
+      return createPaginatedResponse(services, count, page, pageSize);
     } catch (error) {
       console.error("Error al obtener los servicios por tipo de precio:", error);
       return new ErrorService.InternalServerError("Error al obtener los servicios por tipo de precio");

@@ -1,4 +1,3 @@
-import { type OrderBy } from "../../types/general";
 import { CatalogResolver } from "./catalog";
 import { ServiceCategoryResolver } from "./serviceCategory";
 import { ServiceResolver } from "./service";

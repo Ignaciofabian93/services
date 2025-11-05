@@ -1,6 +1,6 @@
-import { QuotationStatus } from "@prisma/client";
 import prisma from "../../client/prisma";
 import { ErrorService } from "../../errors/errors";
+import { QuotationStatus } from "../../types/enums";
 import { calculatePrismaParams } from "../../utils/pagination";
 
 interface AddQuotationInput {
@@ -496,7 +496,7 @@ export const QuotationService = {
       const quotation = await prisma.quotation.update({
         where: { id },
         data: {
-          status: QuotationStatus.ACCEPTED,
+          status: "ACCEPTED",
           acceptedAt: new Date(),
           updatedAt: new Date(),
         },
@@ -546,7 +546,7 @@ export const QuotationService = {
       const quotation = await prisma.quotation.update({
         where: { id },
         data: {
-          status: QuotationStatus.DECLINED,
+          status: "DECLINED",
           providerNotes: reason || undefined,
           updatedAt: new Date(),
         },
@@ -596,7 +596,7 @@ export const QuotationService = {
       const quotation = await prisma.quotation.update({
         where: { id },
         data: {
-          status: QuotationStatus.COMPLETED,
+          status: "COMPLETED",
           completedAt: new Date(),
           updatedAt: new Date(),
         },
@@ -646,7 +646,7 @@ export const QuotationService = {
       const quotation = await prisma.quotation.update({
         where: { id },
         data: {
-          status: QuotationStatus.CANCELLED,
+          status: "CANCELLED",
           providerNotes: reason || undefined,
           updatedAt: new Date(),
         },

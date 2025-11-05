@@ -1,4 +1,4 @@
-import { ServicePricing } from "@prisma/client";
+import { ServicePricing } from "../../types/enums";
 import { ServiceService } from "../services/service";
 
 export const ServiceResolver = {

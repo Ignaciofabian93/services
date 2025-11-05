@@ -34,3 +34,5 @@ export type ContactMethod = "EMAIL" | "WHATSAPP" | "ALL";
 export type WeightUnit = "KG" | "LB" | "OZ" | "G";
 export type ProductSize = "XS" | "S" | "M" | "L" | "XL";
 export type ProductCondition = "NEW" | "OPEN_BOX" | "LIKE_NEW" | "FAIR" | "POOR" | "FOR_PARTS" | "REFURBISHED";
+export type QuotationStatus = "PENDING" | "ACCEPTED" | "DECLINED" | "COMPLETED" | "CANCELLED" | "EXPIRED";
+export type ServicePricing = "FIXED" | "QUOTATION" | "HOURLY" | "PACKAGE";

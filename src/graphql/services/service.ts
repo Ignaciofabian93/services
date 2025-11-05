@@ -1,6 +1,6 @@
-import { ServicePricing } from "@prisma/client";
 import prisma from "../../client/prisma";
 import { ErrorService } from "../../errors/errors";
+import { ServicePricing } from "../../types/enums";
 import { calculatePrismaParams } from "../../utils/pagination";
 
 interface AddServiceInput {

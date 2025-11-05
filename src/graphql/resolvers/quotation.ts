@@ -1,4 +1,4 @@
-import { QuotationStatus } from "@prisma/client";
+import { QuotationStatus } from "../../types/enums";
 import { QuotationService } from "../services/quotation";
 
 export const QuotationResolver = {

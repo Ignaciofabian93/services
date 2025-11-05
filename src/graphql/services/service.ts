@@ -91,7 +91,8 @@ export const ServiceService = {
       // Calculate average rating and review count
       const averageRating =
         service.serviceReview.length > 0
-          ? service.serviceReview.reduce((sum, review) => sum + review.rating, 0) / service.serviceReview.length
+          ? service.serviceReview.reduce((sum: number, review: { rating: number }) => sum + review.rating, 0) /
+            service.serviceReview.length
           : 0;
 
       return {

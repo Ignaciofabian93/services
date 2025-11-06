@@ -8,10 +8,12 @@ export const CatalogService = {
         select: {
           id: true,
           category: true,
+          href: true,
           subcategories: {
             select: {
               id: true,
               subCategory: true,
+              href: true,
             },
           },
         },

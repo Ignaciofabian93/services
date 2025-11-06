@@ -43,6 +43,7 @@ export const typeDefs = gql`
     category: String!
     subcategories: [ServiceSubCategory!]!
     services: ServiceConnection!
+    href: String
   }
 
   type ServiceSubCategory @key(fields: "id") {
@@ -52,6 +53,7 @@ export const typeDefs = gql`
     serviceCategory: ServiceCategory
     services: ServiceConnection!
     serviceCount: Int
+    href: String
   }
 
   type Service @key(fields: "id") {
